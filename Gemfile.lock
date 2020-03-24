@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/netguru/spree_payu_integration.git
+  revision: 2704a600b0b87598df51847b1ca7b0eb7bd3f05b
+  specs:
+    spree_payu_integration (3.0.0)
+      openpayu (~> 0.1.2)
+      spree_core (>= 2.3.0)
+      spree_frontend (>= 2.3.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -181,6 +190,9 @@ GEM
     nio4r (2.5.2)
     nokogiri (1.10.9)
       mini_portile2 (~> 2.4.0)
+    openpayu (0.1.2)
+      activemodel
+      activesupport
     orm_adapter (0.5.0)
     paranoia (2.4.2)
       activerecord (>= 4.0, < 6.1)
@@ -419,6 +431,7 @@ DEPENDENCIES
   spree (~> 4.1)
   spree_auth_devise (~> 4.1)
   spree_gateway (~> 3.7)
+  spree_payu_integration!
   spring
   spring-watcher-listen (~> 2.0.0)
   turbolinks (~> 5)
