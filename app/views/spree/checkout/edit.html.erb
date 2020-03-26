@@ -25,7 +25,10 @@
             <%= render partial: 'summary', locals: { order: @order } %>
             <div data-hook="buttons">
               <% submit_label_key = @order.confirm? ? :place_order : :save_and_continue %>
-              <%= submit_tag Spree.t(submit_label_key), class: 'btn btn-primary text-uppercase font-weight-bold w-100 checkout-content-save-continue-button' %>
+              <%= submit_tag Spree.t(submit_label_key), class: 'btn btn-primary text-uppercase font-weight-bold w-100 checkout-content-save-continue-button', id: "save-cont-#{@order.state}" %>
+
+              <% @data = 'BV9adVXn' + "|" + "#{@order.number}" + "|" + "#{@order.total.to_i}" + "#{@order.products.map(&:description).join(', ')}" + "|" + "Hunny" + "|" + "#{@order.email}" + "||||||" + "||||||" + 'kKWEJ82Gy1' %>
+              <% @hash = Digest::SHA512.hexdigest(@data) %>
             </div>
           </div>
         </div>
@@ -38,5 +41,29 @@
   window.addEventListener('DOMContentLoaded', function() {
     Spree.current_order_id = "<%= @order.number %>"
     Spree.current_order_token = "<%= @order.token %>"
+      $('#save-cont-payment').click(function () {
+        var RequestData = {
+          key: 'BV9adVXn',
+          txnid: "<%= @order.number %>",
+          hash: "<%= @hash %>",
+          amount: "<%= @order.total.to_i %>",
+          firstname: 'Hunny',
+          email: "<%= @order.email %>",
+          phone: '6111111111',
+          productinfo: "<%= @order.products.map(&:description).join(', ') %>",
+          surl: 'http://localhost:3000/test/success',
+          furl: 'http://localhost:3000/test/fail',
+          mode: 'dropout'
+        };
+        var Handler = {
+          responseHandler: function (BOLT) {
+            console.log(BOLT.response.txnStatus);
+          },
+          catchException: function (BOLT) {
+            alert(BOLT.message);
+          }
+        }
+        bolt.launch(RequestData, Handler);
+      });
   })
 </script>
