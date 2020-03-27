@@ -28,3 +28,5 @@ end
 
 
 Spree.user_class = "Spree::User"
+
+Rails.application.config.spree.payment_methods << Spree::PaymentMethod::Payu
