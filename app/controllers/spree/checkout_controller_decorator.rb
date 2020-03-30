@@ -23,7 +23,7 @@ module Spree
 
       return unless payment_method.is_a?(Spree::Gateway::Payu)
 
-      response = PayuPaymentHandler.new(payment_method: payment_method, order: @order).send_payment
+      response = Payu::PaymentHandler.new(payment_method: payment_method, order: @order).send_payment
 
       if response.code == '200'
         render html: response.body.html_safe
