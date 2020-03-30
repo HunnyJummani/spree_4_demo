@@ -23,30 +23,8 @@ module Spree
 
       return unless payment_method.is_a?(Spree::Gateway::Payu)
 
-      uri = URI.parse('https://test.payu.in/_payment')
+      response = PayuPaymentHandler.new(payment_method: payment_method, order: @order).send_payment
 
-      header = { 'Content-Type': 'text/json' }
-      hash_str = 'gtKFFx' + '|' + @order.number.to_s + '|' + @order.total.to_f.to_s + '|' + @order.products.map(&:description).join(', ').to_s + '|' + 'Hunny' + '|' + @order.email.to_s + '|||||||||||eCwWELxi'
-      hash = Digest::SHA512.hexdigest hash_str
-      data = {
-        key: 'gtKFFx',
-        txnid: @order.number,
-        amount: @order.total.to_f.to_s,
-        productinfo: @order.products.map(&:description).join(', '),
-        firstname: 'Hunny',
-        email: @order.email,
-        phone: '8469057689',
-        surl: 'http://localhost:3000/spree/payu_handler/success',
-        furl: 'http://localhost:3000/spree/payu_handler/fail',
-        hash: hash
-      }
-      # Create the HTTP objects
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-      request = Net::HTTP::Post.new(uri.request_uri, header)
-      request.body = URI.encode_www_form(data)
-      # Send the request
-      response = http.request(request)
       if response.code == '200'
         render html: response.body.html_safe
       else
