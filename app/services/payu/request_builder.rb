@@ -32,7 +32,6 @@ module Payu
 
     end
 
-    # TODO
     # Generate reverse hash and compare that with params[:hash] provided by PayU
     # If that matches then then it confirms that req is coming from PayU
     # It is used to handle man-in-middle attack

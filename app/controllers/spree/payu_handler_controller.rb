@@ -31,12 +31,15 @@ module Spree
     private
 
     def check_response_authorized
-      calculated_hash = Payu::RequestBuilder.new(payment_method: payment_method, order: order).payment_resp_hash
-
       if params[:hash] !=  calculated_hash
         redirect_to checkout_state_path(order.state), notice: 'Something went wrong'
       end
     end
+
+    def calculated_hash
+      @calculated_hash ||= Payu::RequestBuilder.new(payment_method: payment_method, order: order).payment_resp_hash
+    end
+
 
     def payment_method
       @payment_method ||= Spree::PaymentMethod.find_by(type: 'Spree::PaymentMethod::Payu')
