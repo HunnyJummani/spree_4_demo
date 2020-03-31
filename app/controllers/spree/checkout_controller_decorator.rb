@@ -4,7 +4,6 @@ module Spree
   module CheckoutControllerDecorator
     def self.prepended(base)
       base.class_eval do
-        skip_before_action :verify_authenticity_token, only: [:update]
         before_action :pay_with_payu, only: :update, if: :order_in_payment?
       end
     end
@@ -21,7 +20,7 @@ module Spree
       pm_id = params[:order][:payments_attributes].first[:payment_method_id]
       payment_method = Spree::PaymentMethod.find(pm_id)
 
-      return unless payment_method.is_a?(Spree::Gateway::Payu)
+      return unless payment_method.is_a?(Constants::PAYUIN_GATEWAY)
 
       response = Payu::PaymentHandler.new(payment_method: payment_method, order: @order).send_payment
 

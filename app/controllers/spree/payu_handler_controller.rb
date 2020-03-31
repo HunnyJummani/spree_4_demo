@@ -6,29 +6,23 @@ module Spree
     #before_action :check_response_authorized
 
     def success
-      session[:payu_response] = params
-      default_payment = {
-        payments_attributes: [{
-          source: nil,
-          payment_method_id: payment_method.try(:id),
-          amount: order.total
-        }]
-      }
-      if order.update(default_payment)
-
-        order.next
+      if order.update_from_params(payu_parmas, permitted_checkout_attributes, request.headers.env)
+        order.temporary_address = !params[:save_user_address]
+        unless order.next
+          flash[:error] = order.errors.full_messages.join("\n")
+          redirect_to(checkout_state_path(order.state)) && return
+        end
 
         if order.completed?
-          @current_order = nil
+          current_order = nil
           flash['order_completed'] = true
-          redirect_path = spree.order_path(order, nil)
+          redirect_to spree.order_path(order, nil)
+        else
+          redirect_to checkout_state_path(order.state)
         end
       else
-        logger.error(" --------  ERROR  -------- \nPAyu Payment Failure: Unable to create payment using parameters: #{order.errors.full_messages.join(', ')}")
-        redirect_path = checkout_state_path(order.state)
+        redirect_to checkout_state_path(order.state)
       end
-
-      redirect_to redirect_path
     end
 
     def fail
@@ -37,6 +31,10 @@ module Spree
 
 
     private
+
+    def payu_parmas
+      ActionController::Parameters.new("_method"=>"patch", order: ActionController::Parameters.new(payments_attributes: [ActionController::Parameters.new(payment_method_id: payment_method.id)]))
+    end
 
     def check_response_authorized
       if params[:hash] !=  calculated_hash
@@ -50,7 +48,7 @@ module Spree
 
 
     def payment_method
-      @payment_method ||= Spree::PaymentMethod.find_by(type: 'Spree::PaymentMethod::Payu')
+      @payment_method ||= Spree::PaymentMethod.find_by(type: Constants::PAYUIN_GATEWAY.to_s)
     end
 
     # params[:txnid] = "R695945340-asdasf"
