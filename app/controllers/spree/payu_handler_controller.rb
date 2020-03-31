@@ -33,7 +33,7 @@ module Spree
     private
 
     def payu_parmas
-      ActionController::Parameters.new("_method"=>"patch", order: ActionController::Parameters.new(payments_attributes: [ActionController::Parameters.new(payment_method_id: payment_method.id)]))
+      ActionController::Parameters.new("_method"=>"patch", order: ActionController::Parameters.new(payments_attributes: [ActionController::Parameters.new(payment_method_id: payment_method.id, response_code: params[:mihpayid])]))
     end
 
     def check_response_authorized

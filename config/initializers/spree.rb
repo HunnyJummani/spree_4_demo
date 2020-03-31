@@ -31,4 +31,6 @@ Spree.user_class = "Spree::User"
 
 #Rails.application.config.spree.payment_methods << Spree::PaymentMethod::Payu
 
+Spree::PermittedAttributes.payment_attributes << :response_code
+
 Rails.application.config.spree.payment_methods << Spree::Gateway::PayuInGateway

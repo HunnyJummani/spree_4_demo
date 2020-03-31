@@ -14,7 +14,7 @@ module Spree
     end
 
     def actions
-      %w[refund]
+      %w[credit]
     end
 
     def payment_profiles_supported?
@@ -34,6 +34,15 @@ module Spree
       ActiveMerchant::Billing::Response.new(true, 'PayUIn Gateway: Forced success', {}, test: true)
     end
 
+    def credit(_money, authorization, _options = {})
+      response = provider_class.new({key: preferences[:merchant_key], salt: preferences[:key_salt], test: test?}).refund(_money, authorization, _options)
+      if response.success?
+        ActiveMerchant::Billing::Response.new(true, 'PayUIn Gateway: refund success', {}, test: test?, authorization: response.params['request_id'])
+      else
+        ActiveMerchant::Billing::Response.new(false, 'PayUIn Gateway: refund failed', {}, test: test?)
+      end
+    end
+
     # As such this is not supported.
     def authorize(*_args)
       ActiveMerchant::Billing::Response.new(true, 'PayUIn will automatically capture the amount after creating a shipment.')
@@ -47,5 +56,10 @@ module Spree
     def cancel(_response_code)
       ActiveMerchant::Billing::Response.new(true, 'PayUIn Gateway: Forced success', {}, test: true)
     end
+
+    def test?
+      preferences[:test_mode]
+    end
+
   end
 end
