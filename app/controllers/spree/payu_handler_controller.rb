@@ -3,7 +3,7 @@
 module Spree
   class PayuHandlerController < Spree::StoreController
     skip_before_action :verify_authenticity_token
-    before_action :check_response_authorized
+    #before_action :check_response_authorized
 
     def success
       session[:payu_response] = params
@@ -15,12 +15,20 @@ module Spree
         }]
       }
       if order.update(default_payment)
+
         order.next
-        redirect_to checkout_state_path(order.state)
+
+        if order.completed?
+          @current_order = nil
+          flash['order_completed'] = true
+          redirect_path = spree.order_path(order, nil)
+        end
       else
         logger.error(" --------  ERROR  -------- \nPAyu Payment Failure: Unable to create payment using parameters: #{order.errors.full_messages.join(', ')}")
-        false
+        redirect_path = checkout_state_path(order.state)
       end
+
+      redirect_to redirect_path
     end
 
     def fail
@@ -32,12 +40,12 @@ module Spree
 
     def check_response_authorized
       if params[:hash] !=  calculated_hash
-        redirect_to checkout_state_path(order.state), notice: 'Something went wrong'
+        redirect_to checkout_state_path(order.state), alert: 'Something went wrong'
       end
     end
 
     def calculated_hash
-      @calculated_hash ||= Payu::RequestBuilder.new(payment_method: payment_method, order: order).payment_resp_hash
+      @calculated_hash ||= Payu::RequestBuilder.new(payment_method: payment_method, order: order).payment_resp_hash(txnid: params[:txnid], status: params[:status])
     end
 
 

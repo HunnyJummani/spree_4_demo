@@ -37,8 +37,8 @@ module Payu
     # It is used to handle man-in-middle attack
     # Ref : https://developer.payumoney.com/redirect/#response-hash
     # salt|status||||||udf5|udf4|udf3|udf2|udf1|email|f_name|productinfo|amount|txnid|key
-    def payment_resp_hash
-      hash_str = "#{key_salt}|||||||||||#{order.email}|#{customer_fname}|#{product_description}|#{order.total.to_f}|#{transaction_id}|#{merchant_key}"
+    def payment_resp_hash(txnid:, status:)
+      hash_str = "#{key_salt}|#{status}|||||||||||#{order.email}|#{customer_fname}|#{product_description}|#{order.total.to_f}|#{txnid}|#{merchant_key}"
       digested_hash hash_str
     end
 
@@ -47,16 +47,16 @@ module Payu
     end
 
     def merchant_key
-      @merchant_key ||= payment_method.preferences[:merchant_key].presence
+      @merchant_key ||= payment_method.preferences[:merchant_key]
     end
 
     def key_salt
-      @key_salt ||= payment_method.preferences[:key_salt].presence
+      @key_salt ||= payment_method.preferences[:key_salt]
     end
 
     # Transaction ID should be unique, If transaction fails and user try again then this number should be unique.
     def transaction_id
-      @transaction_id ||= "#{order.number}#{SecureRandom.hex(5)}"
+      @transaction_id ||= "#{order.number}-#{SecureRandom.hex(5)}"
     end
 
     def product_description
