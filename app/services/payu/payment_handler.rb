@@ -10,7 +10,7 @@ module Payu
     end
 
     def send_payment
-      uri = URI.parse('https://test.payu.in/_payment')
+      uri = URI.parse(Settings.payu_in_host)
       # Create the HTTP objects
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true

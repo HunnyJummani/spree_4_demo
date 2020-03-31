@@ -31,7 +31,7 @@ module Spree
 
     # Purchase is already handled in payU webcheckout flow. So jut giving canned response
     def purchase(_money, credit_card, _options = {})
-      ActiveMerchant::Billing::Response.new(true, 'PayUIn Gateway: Forced success', {}, test: true)
+      ActiveMerchant::Billing::Response.new(true, 'PayUIn Gateway: Forced success', {}, test: test?)
     end
 
     def credit(_money, authorization, _options = {})
@@ -55,7 +55,7 @@ module Spree
 
     # For order cancellation, refund needs to create separately. Cancel method not present for payU gateway
     def cancel(_response_code)
-      ActiveMerchant::Billing::Response.new(true, 'PayUIn Gateway: Forced success', {}, test: true)
+      ActiveMerchant::Billing::Response.new(true, 'PayUIn Gateway: Forced success', {}, test: test?)
     end
 
     def test?

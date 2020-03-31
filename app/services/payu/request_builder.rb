@@ -17,8 +17,8 @@ module Payu
         firstname: customer_fname,
         email: order.email,
         phone: customer_phone_number,
-        surl: 'http://localhost:3001/spree/payu_handler/success',
-        furl: 'http://localhost:3001/spree/payu_handler/fail',
+        surl: "#{Settings.app_host}/spree/payu_handler/success",
+        furl: "#{Settings.app_host}/spree/payu_handler/fail",
         hash: payment_req_hash
       }
     end
