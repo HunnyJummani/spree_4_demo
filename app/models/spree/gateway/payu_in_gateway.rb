@@ -2,8 +2,8 @@ module Spree
   class Gateway::PayuInGateway < Spree::Gateway
     preference :merchant_key, :string
     preference :key_salt, :string
-    preference :merchant_id, :string
-    preference :authorization_header, :string
+    #preference :merchant_id, :string
+    #preference :authorization_header, :string
 
     def method_type
       'payu_in'
@@ -53,6 +53,7 @@ module Spree
       ActiveMerchant::Billing::Response.new(true, 'PayUIn will automatically capture the amount after creating a shipment.')
     end
 
+    # For order cancellation, refund needs to create separately. Cancel method not present for payU gateway
     def cancel(_response_code)
       ActiveMerchant::Billing::Response.new(true, 'PayUIn Gateway: Forced success', {}, test: true)
     end
