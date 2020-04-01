@@ -11,16 +11,12 @@ module Spree
     private
 
     def order_in_payment?
-      @order.state == 'payment'
+      @order.state == 'payment' && payment_method.is_a?(Constants::PAYUIN_GATEWAY)
     end
 
     def pay_with_payu
-      return if order_payment_attrs_blank?
-
-      pm_id = params.dig(:order, :payments_attributes).first[:payment_method_id]
-      payment_method = Spree::PaymentMethod.find(pm_id)
-
-      return unless payment_method.is_a?(Constants::PAYUIN_GATEWAY)
+      # as dig returns value if present
+      return unless order_payment_attrs_blank?
 
       response = Payu::PaymentHandler.new(payment_method: payment_method, order: @order).send_payment
 
@@ -32,7 +28,12 @@ module Spree
     end
 
     def order_payment_attrs_blank?
-      params.dig(:order).blank? || params.dig(:order, :payments_attributes).blank?
+      params.dig(:order) || params.dig(:order, :payments_attributes)
+    end
+
+    def payment_method
+      pm_id = params.dig(:order, :payments_attributes).first[:payment_method_id]
+      @payment_method ||= Spree::PaymentMethod.find_by(id: pm_id)
     end
   end
 end
