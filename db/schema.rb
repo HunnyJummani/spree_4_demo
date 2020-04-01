@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_23_064627) do
+ActiveRecord::Schema.define(version: 2020_03_31_142642) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -436,6 +436,26 @@ ActiveRecord::Schema.define(version: 2020_03_23_064627) do
     t.index ["order_id"], name: "index_spree_payments_on_order_id"
     t.index ["payment_method_id"], name: "index_spree_payments_on_payment_method_id"
     t.index ["source_id", "source_type"], name: "index_spree_payments_on_source_id_and_source_type"
+  end
+
+  create_table "spree_payu_details", force: :cascade do |t|
+    t.string "mih_pay_id"
+    t.string "status"
+    t.string "txnid"
+    t.string "payment_source"
+    t.string "pg_type"
+    t.string "bank_ref_num"
+    t.string "error"
+    t.string "error_message"
+    t.string "issuing_bank"
+    t.string "card_type"
+    t.string "card_num"
+    t.bigint "payment_id", null: false
+    t.bigint "order_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["order_id"], name: "index_spree_payu_details_on_order_id"
+    t.index ["payment_id"], name: "index_spree_payu_details_on_payment_id"
   end
 
   create_table "spree_preferences", id: :serial, force: :cascade do |t|

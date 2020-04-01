@@ -16,6 +16,7 @@ module Spree
         if order.completed?
           current_order = nil
           flash['order_completed'] = true
+          Payu::CreatePayuDetails.new(order, params).create
           redirect_to spree.order_path(order, nil)
         else
           redirect_to checkout_state_path(order.state)
