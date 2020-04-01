@@ -15,9 +15,9 @@ module Spree
     end
 
     def pay_with_payu
-      return if params[:order].blank? || params[:order][:payments_attributes].blank?
+      return if order_payment_attrs_blank?
 
-      pm_id = params[:order][:payments_attributes].first[:payment_method_id]
+      pm_id = params.dig(:order, :payments_attributes).first[:payment_method_id]
       payment_method = Spree::PaymentMethod.find(pm_id)
 
       return unless payment_method.is_a?(Constants::PAYUIN_GATEWAY)
@@ -29,6 +29,10 @@ module Spree
       else
         redirect_to response['location']
       end
+    end
+
+    def order_payment_attrs_blank?
+      params.dig(:order).blank? || params.dig(:order, :payments_attributes).blank?
     end
   end
 end

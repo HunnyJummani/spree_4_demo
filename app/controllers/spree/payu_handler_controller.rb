@@ -28,7 +28,7 @@ module Spree
 
     def fail
       Payu::CreatePayuDetails.new(order, params).create
-      redirect_to checkout_state_path(order.state)
+      redirect_to checkout_state_path(order.state), alert: 'Something went wrong.'
     end
 
     private
