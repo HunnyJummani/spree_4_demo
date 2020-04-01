@@ -4,20 +4,17 @@ module Spree
   module CheckoutControllerDecorator
     def self.prepended(base)
       base.class_eval do
-        before_action :pay_with_payu, only: :update, if: :order_in_payment?
+        before_action :pay_with_payu, only: :update, if: :payment_with_payu?
       end
     end
 
     private
 
-    def order_in_payment?
+    def payment_with_payu?
       @order.state == 'payment' && payment_method.is_a?(Constants::PAYUIN_GATEWAY)
     end
 
     def pay_with_payu
-      # as dig returns value if present
-      return unless order_payment_attrs_blank?
-
       response = Payu::PaymentHandler.new(payment_method: payment_method, order: @order).send_payment
 
       if response.code == '200'
