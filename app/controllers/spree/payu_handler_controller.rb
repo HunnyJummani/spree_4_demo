@@ -3,7 +3,7 @@
 module Spree
   class PayuHandlerController < Spree::StoreController
     skip_before_action :verify_authenticity_token
-    #before_action :check_response_authorized
+    # before_action :check_response_authorized
 
     def success
       if order.update_from_params(payu_parmas, permitted_checkout_attributes, request.headers.env)
@@ -27,21 +27,18 @@ module Spree
     end
 
     def fail
-
-      binding.pry
       Payu::CreatePayuDetails.new(order, params).create
       redirect_to checkout_state_path(order.state)
     end
 
-
     private
 
     def payu_parmas
-      ActionController::Parameters.new("_method"=>"patch", order: ActionController::Parameters.new(payments_attributes: [ActionController::Parameters.new(payment_method_id: payment_method.id, response_code: params[:mihpayid])]))
+      ActionController::Parameters.new('_method' => 'patch', order: ActionController::Parameters.new(payments_attributes: [ActionController::Parameters.new(payment_method_id: payment_method.id, response_code: params[:mihpayid])]))
     end
 
     def check_response_authorized
-      if params[:hash] !=  calculated_hash
+      if params[:hash] != calculated_hash
         redirect_to checkout_state_path(order.state), alert: 'Something went wrong'
       end
     end
@@ -49,7 +46,6 @@ module Spree
     def calculated_hash
       @calculated_hash ||= Payu::RequestBuilder.new(payment_method: payment_method, order: order).payment_resp_hash(txnid: params[:txnid], status: params[:status])
     end
-
 
     def payment_method
       @payment_method ||= Spree::PaymentMethod.find_by(type: Constants::PAYUIN_GATEWAY.to_s)
