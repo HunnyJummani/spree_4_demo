@@ -450,7 +450,7 @@ ActiveRecord::Schema.define(version: 2020_03_31_142642) do
     t.string "issuing_bank"
     t.string "card_type"
     t.string "card_num"
-    t.bigint "payment_id", null: false
+    t.bigint "payment_id"
     t.bigint "order_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

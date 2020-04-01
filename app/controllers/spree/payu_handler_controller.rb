@@ -27,6 +27,9 @@ module Spree
     end
 
     def fail
+
+      binding.pry
+      Payu::CreatePayuDetails.new(order, params).create
       redirect_to checkout_state_path(order.state)
     end
 

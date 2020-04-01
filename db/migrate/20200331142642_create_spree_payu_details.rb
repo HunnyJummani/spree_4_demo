@@ -12,7 +12,7 @@ class CreateSpreePayuDetails < ActiveRecord::Migration[6.0]
       t.string :issuing_bank
       t.string :card_type
       t.string :card_num, length: 4
-      t.references :payment, null: false
+      t.references :payment, null: true
       t.references :order, null: false
 
       t.timestamps
