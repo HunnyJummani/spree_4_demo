@@ -13,6 +13,8 @@ Spree.config do |config|
   # Example:
   # Uncomment to stop tracking inventory levels in the application
   # config.track_inventory_levels = false
+  config.currency = 'INR'
+  config.default_country_id = Spree::Country.find_by(name: 'India').id # Your default country id
 end
 
 # Configure Spree Dependencies
