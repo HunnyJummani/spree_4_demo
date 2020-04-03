@@ -1,0 +1,2 @@
+payu_in_host: 'https://test.payu.in/_payment'
+app_host: 'http://localhost:3000'
