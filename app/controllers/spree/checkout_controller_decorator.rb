@@ -24,10 +24,6 @@ module Spree
       end
     end
 
-    def order_payment_attrs_blank?
-      params.dig(:order) || params.dig(:order, :payments_attributes)
-    end
-
     def payment_method
       pm_id = params.dig(:order, :payments_attributes).first[:payment_method_id]
       @payment_method ||= Spree::PaymentMethod.find_by(id: pm_id)

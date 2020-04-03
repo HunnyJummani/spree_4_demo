@@ -7,7 +7,6 @@ module Payu
       @payment_method = payment_method
     end
 
-
     def payload
       {
         key: merchant_key,
@@ -23,13 +22,11 @@ module Payu
       }
     end
 
-
     # key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||salt.
     # REF : https://developer.payumoney.com/redirect/
     def payment_req_hash
       hash_str = "#{merchant_key}|#{transaction_id}|#{@order.total.to_f}|#{product_description}|#{customer_fname}|#{@order.email}|||||||||||#{key_salt}"
       digested_hash hash_str
-
     end
 
     # Generate reverse hash and compare that with params[:hash] provided by PayU
@@ -37,8 +34,9 @@ module Payu
     # It is used to handle man-in-middle attack
     # Ref : https://developer.payumoney.com/redirect/#response-hash
     # salt|status||||||udf5|udf4|udf3|udf2|udf1|email|f_name|productinfo|amount|txnid|key
-    def payment_resp_hash(txnid:, status:)
-      hash_str = "#{key_salt}|#{status}|||||||||||#{order.email}|#{customer_fname}|#{product_description}|#{order.total.to_f}|#{txnid}|#{merchant_key}"
+
+    def payment_resp_hash(params)
+      hash_str = "#{key_salt}|#{params[:status]}|||||||||||#{params[:email]}|#{params[:firstname]}|#{params[:productinfo]}|#{params[:amount]}|#{params[:txnid]}|#{merchant_key}"
       digested_hash hash_str
     end
 
@@ -70,6 +68,5 @@ module Payu
     def customer_phone_number
       @customer_phone_number ||= order.shipping_address.phone
     end
-
   end
 end

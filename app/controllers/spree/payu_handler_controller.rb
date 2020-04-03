@@ -3,7 +3,7 @@
 module Spree
   class PayuHandlerController < Spree::StoreController
     skip_before_action :verify_authenticity_token
-    # before_action :check_response_authorized
+    before_action :check_response_authorized
 
     def success
       if order.update_from_params(payu_parmas, permitted_checkout_attributes, request.headers.env)
@@ -12,7 +12,6 @@ module Spree
           flash[:error] = order.errors.full_messages.join("\n")
           redirect_to(checkout_state_path(order.state)) && return
         end
-
         if order.completed?
           current_order = nil
           flash['order_completed'] = true
@@ -44,7 +43,7 @@ module Spree
     end
 
     def calculated_hash
-      @calculated_hash ||= Payu::RequestBuilder.new(payment_method: payment_method, order: order).payment_resp_hash(txnid: params[:txnid], status: params[:status])
+      @calculated_hash ||= Payu::RequestBuilder.new(payment_method: payment_method, order: order).payment_resp_hash(params)
     end
 
     def payment_method
